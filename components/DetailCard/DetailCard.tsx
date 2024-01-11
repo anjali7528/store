@@ -5,10 +5,23 @@ import {Text} from '@rneui/themed';
 import UploadImgBottomsheet from '../UploadImgBottomsheet/UploadImgBottomsheet';
 import ConfirmBottomSheet from '../ConfirmImageUploadBottomsheet/ConfirmBottomSheet';
 
-const DetailCard = () => {
+const DetailCard = ({data, setRender}: any) => {
   const [isBottomsheetVisible, setBottomsheetVisible] = useState(false);
   const [isConfirmBSVisible, setConfirmBSVisible] = useState(false);
   const [singleFile, setSingleFile] = useState({});
+
+  const {
+    name,
+    type,
+    category,
+    address,
+    about,
+    openTill,
+    onlinePayments,
+    phoneNumber,
+    email,
+    features,
+  } = data;
 
   return (
     <Card containerStyle={style.textContainer}>
@@ -18,58 +31,57 @@ const DetailCard = () => {
           h4Style={style.headingStyle}
           numberOfLines={1}
           ellipsizeMode="tail">
-          Auto Emporium
+          {name}
         </Text>
         <View style={style.paymentOption}>
-          <Icon type="antdesign" name="checkcircle" color="#4ec747" />
+          <Icon
+            type="antdesign"
+            name={onlinePayments ? 'checkcircle' : 'closecircle'}
+            color={onlinePayments ? '#4ec747' : '#ff0000'}
+          />
           <Text>Online Payment </Text>
         </View>
       </View>
       <View style={style.subtitleInfo}>
-        <Text style={style.subtitleText}> Automotive| Wholesale</Text>
+        <Text style={style.subtitleText}>
+          {' '}
+          {category} | {type}
+        </Text>
       </View>
       <View>
         <Card.Divider />
         <Text style={style.locationText}>About</Text>
-        <Text style={style.discription}>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Magnam eaque
-          vero, minus amet magni modi maiores neque, officiis repudiandae sed
-          eveniet similique fuga nam aspernatur sit iusto doloribus maxime
-          dignissimos!
-        </Text>
+        <Text style={style.discription}>{about}</Text>
       </View>
       <View style={style.contactBox}>
         <Card.Divider />
         <Text style={style.locationText}> Location and Contact</Text>
         <View style={style.openTill}>
           <Icon type="material" name="access-time" />
-          <Text>Open Till 10:30 pm</Text>
+          <Text>Open Till {openTill}</Text>
         </View>
         <View style={style.openTill}>
           <Icon type="entypo" name="location" />
-          <Text>456 Car Avenue, Auto City</Text>
+          <Text>{address}</Text>
         </View>
         <View style={style.openTill}>
           <Icon type="ionicons" name="call" />
-          <Text>98635817374</Text>
+          <Text>{phoneNumber}</Text>
         </View>
         <View style={style.openTill}>
           <Icon type="fontisto" name="email" />
-          <Text>autoep@gmail.com</Text>
+          <Text>{email}</Text>
         </View>
       </View>
       <View style={style.contactBox}>
         <Card.Divider />
         <Text style={style.locationText}>Features</Text>
         <View style={style.featureTextBox}>
-          <Text style={style.featureText}>{'\u25CF Parking Avalable'}</Text>
-          <Text style={style.featureText}>{'\u25CF Home Delivery'}</Text>
-          <Text style={style.featureText}>
-            {'\u25CF Deals in selling and purchasing of new cars also'}
-          </Text>
+          {features?.map((feature: any, key:any) => (
+            <Text style={style.featureText} key={key}>{`\u25CF ${feature}`}</Text>
+          ))}
         </View>
       </View>
-
       <View style={style.btnView}>
         <Button
           title="Add Image"
@@ -86,19 +98,19 @@ const DetailCard = () => {
           onPress={() => setBottomsheetVisible(true)}
         />
       </View>
-      {isBottomsheetVisible && (
-        <UploadImgBottomsheet
-          isVisible={isBottomsheetVisible}
-          setIsVisible={setBottomsheetVisible}
-          setConfirmBS={setConfirmBSVisible}
-          setSingleFile={setSingleFile}
-        />
-      )}
-      {isConfirmBSVisible && Object.keys(singleFile).length !== 0 && (
+      <UploadImgBottomsheet
+        isVisible={isBottomsheetVisible}
+        setIsVisible={setBottomsheetVisible}
+        setConfirmBS={setConfirmBSVisible}
+        setSingleFile={setSingleFile}
+      />
+      {Object.keys(singleFile).length !== 0 && (
         <ConfirmBottomSheet
           file={singleFile}
           setBottomsheetClose={setConfirmBSVisible}
           isVisible={isConfirmBSVisible}
+          name={name}
+          setRender={setRender}
         />
       )}
     </Card>
@@ -172,13 +184,13 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 24,
   },
-  btn:{
+  btn: {
     backgroundColor: '#2E8B57',
     borderColor: 'transparent',
     borderWidth: 0,
     borderRadius: 30,
   },
-  btnContainer:{
+  btnContainer: {
     width: 200,
   },
 });

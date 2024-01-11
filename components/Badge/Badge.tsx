@@ -6,24 +6,44 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import {Button, Icon} from '@rneui/base';
+import { useNavigation } from '@react-navigation/native';
 
 interface IBadgeIcon {
   icon?: string;
   text?: String;
   type?: string;
+  onPressFun?: React.Dispatch<React.SetStateAction<Boolean>>
+  onPressCommand ?:any,
 }
 
-const BadgeIcon = ({icon, text, type}: IBadgeIcon) => {
+const Badge = ({icon, text, type, onPressFun, onPressCommand}: IBadgeIcon) => {
+    const navigation = useNavigation();
+    const [activateCross, setActivateCross] = useState(false);
+
+   const setPress = () => {  
+    onPressCommand(text)
+    setActivateCross(true);
+   }
+
+   const reset = () =>{
+    onPressCommand('reset')
+    setActivateCross(false);
+   }
+
   return (
     <TouchableOpacity
       style={[
         style.container,
         icon ? style.iconContainer : style.textContainer,
-      ]}>
-      {icon && <Icon color="#FFFFED" name={icon} type={type}></Icon>}
+        
+      ]}
+      onPress={() =>{ onPressFun ?  onPressFun(true) : setPress()}}
+      >
+      {icon && <Icon color="#FFFFED" name={icon} type={type} ></Icon>}
       {text && <Text style={style.text}> {text} </Text>}
+      {text && activateCross && <Icon color="#FF0000" name='cross' type='entypo' onPress={()=> reset()}></Icon>}
     </TouchableOpacity>
   );
 };
@@ -54,4 +74,4 @@ const style = StyleSheet.create({
   },
 });
 
-export default BadgeIcon;
+export default Badge;

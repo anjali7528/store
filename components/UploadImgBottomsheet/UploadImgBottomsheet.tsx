@@ -19,6 +19,7 @@ const UploadImgBottomsheet = ({
   setConfirmBS,
   setSingleFile,
 }: IUploadImgBottomsheet) => {
+  
   const selectFile = async () => {
     try {
       const documentPickerResult = await DocumentPicker.pick({
@@ -41,22 +42,22 @@ const UploadImgBottomsheet = ({
   const handleCameraLaunch = () => {
     let options = {};
     launchCamera(options, response => {
-      console.log('Response = ', response);
       if (response.didCancel) {
         console.log('User cancelled camera');
       } else if (response.errorMessage) {
         console.log('Camera Error: ', response.errorMessage);
-      } else {
-        let imageUri = response?.assets[0];
+      } else if(response.assets) {
+        let imageUri = response.assets[0];
         setSingleFile(imageUri);
-        console.log(response?.assets[0]);
         setIsVisible(false);
         if (setConfirmBS) setConfirmBS(true);
+      }
+      else{
+        console.log("error")
       }
     });
   };
   return (
-    <View>
       <BottomSheet
         isVisible={isVisible}
         onBackdropPress={() => setIsVisible(false)}>
@@ -88,7 +89,6 @@ const UploadImgBottomsheet = ({
           </View>
         </View>
       </BottomSheet>
-    </View>
   );
 };
 

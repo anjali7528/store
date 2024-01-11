@@ -1,4 +1,4 @@
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Touchable, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {Card, Image} from '@rneui/base';
 import {Text} from '@rneui/themed';
@@ -9,16 +9,16 @@ interface IItemCard {
   category: string;
   type: string;
   address: string;
-  navigation:any
 }
 
-const ItemCard = ({image, name, category, type, address, navigation}: IItemCard) => {
+const ItemCard = ({image, name, category, type, address}: IItemCard) => {
   return (
     <Card containerStyle={style.upperContainer}>
       <View style={style.container}>
         <View style={style.image}>
           <Card.Image
-            source={{
+            source={
+              {
               uri: image,
             }}
           />

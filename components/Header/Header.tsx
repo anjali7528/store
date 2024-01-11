@@ -4,7 +4,12 @@ import Search from '../Search/Search'
 import {Text} from '@rneui/themed';
 import { Icon } from '@rneui/base';
 
-const Header = () => {
+interface IHeader{
+ onSearch : (value: string) => void
+}
+
+const Header = ({onSearch}:IHeader) => {
+
   return (
     <View style={style.container}>
         <View style={style.headerInfo}>
@@ -15,7 +20,7 @@ const Header = () => {
       </View>
         </View>
         <View>
-        <Search />
+        <Search onChange={onSearch}/>
         </View> 
     </View>
   )

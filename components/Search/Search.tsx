@@ -1,22 +1,24 @@
 import {StyleSheet, Dimensions, View} from 'react-native';
 import React, {useState} from 'react';
 import {SearchBar} from '@rneui/base';
+import { ShopData } from '../../pages/Data';
 
-const Search = () => {
+interface ISearch{
+  onChange:(value:string) => void
+}
+
+const Search = ({onChange}:ISearch) => {
   const [search, setSearch] = useState('');
-
-  const updateSearch = (search: string) => {
-    setSearch(search);
-  };
 
   return (
     <View>
       <SearchBar
         placeholder="Search Stores"
-        onChangeText={updateSearch}
+        onChangeText={(value)=>{
+          onChange(value) 
+          setSearch(value)}}
         value={search}
         round
-        autoCorrect={false}
         containerStyle={styles.searchbar}
         inputContainerStyle={{backgroundColor:'#f5f5f5'}}
       />

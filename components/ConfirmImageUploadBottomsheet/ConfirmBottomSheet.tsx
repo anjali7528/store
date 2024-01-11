@@ -2,43 +2,76 @@ import {View, StyleSheet, TouchableOpacity, ToastAndroid} from 'react-native';
 import React from 'react';
 import {BottomSheet, Text} from '@rneui/themed';
 import {Card, Icon, Image} from '@rneui/base';
+import {getDownloadURL, getStorage, ref, uploadBytes} from 'firebase/storage';
+import { getDatabase } from 'firebase/database';
+import { updateData } from '../../firebase/controllers';
 
 interface IConfirmBSVisible {
-  file: any;
+  file: Record<string, any>;
   setBottomsheetClose: React.Dispatch<React.SetStateAction<boolean>>;
   isVisible: boolean;
+  name:string,
+  setRender:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ConfirmBottomSheet = ({
   file,
   setBottomsheetClose,
   isVisible,
+  name,
+  setRender
 }: IConfirmBSVisible) => {
   const uploadImage = async () => {
-    // Check if any file is selected or not
     if (file.uri != null) {
-      // If file selected then create FormData
       const fileToUpload = file.uri;
       const data = new FormData();
       data.append('name', 'Image Upload');
       data.append('file_attachment', fileToUpload);
-
-      let res = await fetch('', {
-        method: 'post',
-        body: data,
-        headers: {
-          'Content-Type': 'multipart/form-data; ',
-        },
-      });
-      let responseJson = await res.json();
-      if (responseJson.status == 1) {
-        ToastAndroid.show('Image Uploaded successfully!', ToastAndroid.SHORT);
-        setBottomsheetClose(false);
-      }
+      console.log(file);
+      await uploadImagetoDB(file?.uri);
     } else {
-      // If no file selected the show alert
       ToastAndroid.show('Error Occured', ToastAndroid.SHORT);
     }
+  };
+
+  const uploadImagetoDB = async (uri: any) => {
+
+    const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    const blob:Blob = await new Promise((resolve, rej) =>{
+      const xhr = new XMLHttpRequest();
+      xhr.onload = () =>{
+        resolve(xhr.response)
+      }
+      xhr.onerror =( e) =>{
+        rej("error")
+      }
+      xhr.responseType = 'blob'
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    })
+    
+    const storage = getStorage();
+    const storageRef = ref(storage, `images/${filename}`);
+    const metadata = {
+      contentType: 'image/jpeg',
+    }
+    uploadBytes(storageRef, blob, metadata)
+      .then(snapshot => {
+        console.log(`Upload is done`);
+      })
+      .catch(error => {
+        console.error('Error uploading image:', error);
+      });
+
+    await getDownloadURL(ref(storage, `images/${filename}`)).then(
+      (url: any) => {
+         updateData(name,url)
+         setBottomsheetClose(false);
+         setRender(true);
+      },
+    );
+    // Store the download URL in the Realtime Database or wherever you need it
+    // storeDownloadURL(downloadURL);
   };
 
   return (
